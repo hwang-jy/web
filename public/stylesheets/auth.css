@@ -1,0 +1,29 @@
+.login_wrap{
+    width: 100%;
+}
+
+.id_pw_wrap{
+    list-style-type: none;
+}
+
+.find_wrap{
+    list-style-type: none;
+}
+  
+.find_wrap li{
+    float: left;
+}
+  
+.find_text{
+    color: #888888;
+}
+  
+.find_wrap li+li::before{
+    content: " | ";
+    color: #888888;
+    padding-left: 5px;
+}
+
+.input_text{
+    border: none;
+}
