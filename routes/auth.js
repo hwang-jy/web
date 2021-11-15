@@ -1,17 +1,36 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.render('auth', {});
-});
+module.exports = function(passport){
+  // base route: /auth
+  router.get('/', (req, res, next) => {
+    res.render('auth/login', {});
+  });
 
-router.get('/sign', function(req, res, next){
-  res.render('sign', {});
-});
+  router.get('/google', 
+    passport.authenticate('google', {
+      scope: ['https://www.googleapis.com/auth/plus.login', 'email']
+  }));
 
-router.post('/sign', function(req, res, next){
-  res.render('sign', {});
-})
+  router.get('/google/callback', passport.authenticate('google', {failureRedirect: '/auth'}),
+      (req, res) => {
+        req.session.save(() => { 
+          res.redirect('/');
+        });
+      }
+  );
 
-module.exports = router;
+  router.get('/logout', (req, res) => {
+    req.logOut();
+    res.clearCookie('connect.sid');
+    req.session.destroy((err) => {
+      if(err){
+        console.error('logout fail.', err);
+      }
+
+      res.redirect('/');
+    });
+  });
+
+  return router;
+}

@@ -1,0 +1,4 @@
+node_modules
+sessions
+config/*.json
+!config/*.template.json
