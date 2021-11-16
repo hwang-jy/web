@@ -1,1 +1,23 @@
-h1 this is board_list pug file
+- var table_form = {id: "번호",subject: "주제",title: "제목",auth: "작성자",created: "작성일",views: "조회",hit: "추천"}
+table
+    tr 
+        td= table_form.subject
+    tr 
+        td= table_form.id
+        td= table_form.title
+        td= table_form.auth
+        td= table_form.created
+        td= table_form.views
+        td= table_form.hit
+    each board in board_list 
+        tr 
+            td= board.id 
+            td 
+                a(href="/board/" + board.id)= board.title 
+            td= board.name 
+            td= board.created 
+            td= board.views 
+            td= board.hit
+    
+
+    
