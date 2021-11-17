@@ -8,3 +8,7 @@ a {
   cursor: pointer;
 }
 
+.hover_under:hover{
+  text-decoration-line: underline;
+}
+

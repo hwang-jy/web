@@ -1,4 +1,5 @@
-const db = require('./database');
+const DB = require('./database');
+const SQL = require('./sql');
 const googleCredentials = require('../../config/google.json');
 const { InsufficientStorage } = require('http-errors');
 const googleConfig = {
@@ -29,7 +30,7 @@ module.exports = function(app){
         function(accessToken, refreshToken, profile, done){
             const email = profile.emails[0].value;
 
-            db.query('SELECT id, email, name, token FROM auth WHERE email=?', [email], function(err11, user){
+            DB.query(SQL.auth.select.userByEmail, [email], function(err11, user){
                 if(err11){
                     console.error('ERROR L100', err11);
                     done(err11);
@@ -39,13 +40,13 @@ module.exports = function(app){
                 if(user.length === 0){
                     const name = profile.displayName;
                     
-                    db.query('INSERT INTO auth(email, token) VALUES(?, ?)', [email, accessToken], function(err21, user21){
+                    DB.query(SQL.auth.insert.newUser, [email, accessToken], function(err21, user21){
                         if(err21){
                             console.error('ERROR L21', err21);
                             done(err21);
                         }
 
-                        db.query('SELECT id, email, name, token FROM auth WHERE id=?', [user21.insertId], function(err22, user22){
+                        DB.query(SQL.auth.select.userById, [user21.insertId], function(err22, user22){
                             if(err22){
                                 console.error('ERROR L22', err22);
                                 done(err22);
@@ -58,7 +59,7 @@ module.exports = function(app){
                 
                 //DB에 등록된 구글 이메일 로그인 시 토큰 업데이트
                 if(user.length === 1){
-                    db.query('UPDATE auth SET token=? WHERE id=?', [accessToken, user[0].id], function(err31, user31){
+                    DB.query(SQL.auth.update.tokenById, [accessToken, user[0].id], function(err31, user31){
                         if(err31){
                             console.error('ERROR L31', err31);
                             done(err31);

@@ -1,0 +1,23 @@
+.page_button_wrap{
+    list-style: none;
+}
+
+.page_button_wrap li{
+    float: left;
+}
+
+.page_button_wrap li+li::before{
+    content: " | ";
+    color: #888888;
+    padding-left: 5px;
+}
+
+/*페이지 버튼 관련*/
+.btn_page{
+    color: black;
+    font-size: 14px;
+}
+
+.active{
+    border: gray solid 1px;
+}
