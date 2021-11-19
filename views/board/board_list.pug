@@ -10,7 +10,7 @@ div
             th= table_form.created
             th= table_form.views
             th= table_form.hit
-        each board in board_list 
+        each board in board_list.post
             tr.board_item 
                 td= board.id 
                 td 
@@ -22,13 +22,13 @@ div
         tr 
             td(colspan="6")
                 ul.page_button_wrap
-                    each i in [1, 2, 3, 4, 5, 6, 7, 8, 9]
+                    each i in board_list.page.getButtons()
                         li
-                            if i == board_list.page
+                            if i == board_list.page.currPage
                                 a.btn_page.hover_under.active(href="/" + i)= i
                             else
                                 a.btn_page.hover_under(href="/" + i)= i
-            
+                
 
 
     
