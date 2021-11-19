@@ -10,25 +10,25 @@ div
             th= table_form.created
             th= table_form.views
             th= table_form.hit
-        each board in board_list.post
+        each post in board.posts
             tr.board_item 
-                td= board.id 
+                td= post.id 
                 td 
-                    a.hover_under(href="/board/" + board.id)= board.title 
-                td= board.name 
-                td= board.created 
-                td= board.views 
-                td= board.hit
+                    a.hover_under(href="/board/" + post.id)= post.title 
+                td= post.name 
+                td= post.created 
+                td= post.views 
+                td= post.hit
         tr 
             td(colspan="6")
                 ul.page_button_wrap
-                    each i in board_list.page.getButtons()
+                    each page in board.pages
                         li
-                            if i == board_list.page.currPage
-                                a.btn_page.hover_under.active(href="/" + i)= i
+                            if page == board.page
+                                a.btn_page.hover_under.active(href="/board/" + page)= page
                             else
-                                a.btn_page.hover_under(href="/" + i)= i
-                
+                                a.btn_page.hover_under(href="/board/" + page)= page
 
 
-    
+
+
