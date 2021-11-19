@@ -6,7 +6,7 @@ module.exports = {
             FROM BS_BOARD 
             LEFT JOIN auth ON BS_BOARD.auth=auth.id 
             ORDER BY BS_BOARD.id DESC 
-            LIMIT ?, ?`,
+            LIMIT ? OFFSET ?`,
 
             rows: `SELECT FOUND_ROWS() AS total`
         }
