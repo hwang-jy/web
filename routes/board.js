@@ -15,6 +15,14 @@ function getOffset(page, unit) {
     return 0;
 }
 
+function isLogin(request){
+    if(request.user == undefined){
+        return false
+    }
+
+    return request.user.isLogin;
+}
+
 function renderBoardList(request, response, done) {
     var page = request.params.page;
 
@@ -31,24 +39,48 @@ function renderBoardList(request, response, done) {
 }
 
 router.get('/', function(req, res){
-    renderBoardList(req, res, function(err, result){
-        if(err){console.error("ERROR", err); return;}
-        res.render('board/board', {user:req.user, board: result});
+    if(!isLogin(req)){
+        res.redirect('/auth');
+        return;
+    }
+
+    res.render('board/new');
+});
+
+router.get('/:id', function(req, res, done){
+    if(!isLogin(req)){
+        res.redirect('/auth');
+        return;
+    }
+
+    var id = req.params.id;
+    var idIsNumber = REGEX.number.id.test(id);
+
+    if(!idIsNumber){
+        done(null);
+        return;
+    }
+
+    DB.query(SQL.board.select.content, [id], function(err, result){
+        if(err){console.error("ERROR: R-B-100"); done(err); return;}
+
+        console.log('board >>', result[0]);
+        res.render('board/board', {user:req.user, board: result[0]});
     });
 });
 
-router.get('/:page', function(req, res){
+router.get('/page/:page', function(req, res){
     var page = req.params.page;
     var pageIsNumber = REGEX.number.page.test(page);
 
     if(!pageIsNumber){
-        res.redirect('/board/1');
+        res.redirect('/boards/1');
         return;
     }
 
     renderBoardList(req, res, function(err, result){
         if(err){console.error("ERROR", err); return;}
-        res.render('board/board', {user:req.user, board: result});
+        res.render('board/boards', {user:req.user, board: result});
     });
 });
 

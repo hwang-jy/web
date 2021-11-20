@@ -11,10 +11,13 @@ module.exports = function(passport){
         scope: ['https://www.googleapis.com/auth/plus.login', 'email']
     }));
 
-    router.get('/google/callback', passport.authenticate('google', {failureRedirect: '/auth'}), function(req, res){
-        req.session.save(function(){
-            res.redirect('/');
-        })
+    router.get('/google/callback', 
+        passport.authenticate('google', {failureRedirect: '/auth'}), 
+        function(req, res){
+            req.user.isLogin = true;
+            req.session.save(function(){
+                res.redirect('/');
+            })
     });
     
     router.get('/logout', function(req, res){

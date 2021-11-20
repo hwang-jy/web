@@ -40,7 +40,7 @@ module.exports = function(app){
                 if(user.length === 0){
                     const name = profile.displayName;
                     
-                    DB.query(SQL.auth.insert.newUser, [email, accessToken], function(err21, user21){
+                    DB.query(SQL.auth.insert.signup, [email, accessToken], function(err21, user21){
                         if(err21){
                             console.error('ERROR L21', err21);
                             done(err21);

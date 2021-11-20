@@ -1,0 +1,21 @@
+form
+    input(type="text", name="title" placeholder="제목을 입력해주세요.")
+    input(type="textarea", name="contents" placeholder="내용을 입력해주세요.")
+
+
+    input(type="hidden", name="subject", value="1")
+    input(type="hidden", name="method", value="POST or PUT")
+
+    //- if "POST" == "POST"
+    //-     button(type="submit" formaction="/board" formmethod="POST") 등록
+    //- else if "PUT" == "PUT"
+    //-     button(type="submit" formaction="/board" formmethod="POST") 수정
+
+    button(type="submit" formaction="/board" formmethod="POST")
+        if "POST" == "POST"
+            등록
+        else if "PUT" == "PUT"
+            수정
+
+
+    

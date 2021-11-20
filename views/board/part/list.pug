@@ -25,9 +25,11 @@ div
                     each page in board.pages
                         li
                             if page == board.page
-                                a.btn_page.hover_under.active(href="/board/" + page)= page
+                                a.btn_page.hover_under.active(href="/board/page" + page)= page
                             else
-                                a.btn_page.hover_under(href="/board/" + page)= page
+                                a.btn_page.hover_under(href="/board/page/" + page)= page
+    
+    a(href="/board") 작성
 
 
 
