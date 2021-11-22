@@ -1,4 +1,7 @@
 if user === undefined 
     a(href="/auth") login
 else 
-    a(href="/auth/logout") #{user.name}님 환영합니다. logout
+    if user.name === null
+        a(href="/auth/logout") #{user.email}님 환영합니다. logout
+    else
+        a(href="/auth/logout") #{user.name}님 환영합니다. logout

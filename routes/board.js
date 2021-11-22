@@ -44,7 +44,44 @@ router.get('/', function(req, res){
         return;
     }
 
-    res.render('board/new');
+    res.render('board/board_write', {user: req.user});
+});
+
+router.post('/', function(req, res){
+
+    if(!isLogin(req)){
+        res.redirect('/auth');
+        return;
+    }
+
+    var formMethod = req.body.method;
+    var boardId = req.body.id;
+    var authId = req.user.id;
+
+    if(formMethod != "DELETE"){
+        var subject = req.body.subject;
+        var title = req.body.title;
+        var contents = req.body.contents;
+    }
+    
+    if(formMethod == "POST"){
+        DB.query(SQL.board.insert.contents, [subject, title, contents, authId], function(err, result){
+            if(err){console.error("ERROR: contents create fail."); return;}
+            res.redirect('/board/' + result.insertId);
+        });
+
+    }else if(formMethod == "PUT"){
+        DB.query(SQL.board.update.contents, [title, contents, boardId, authId], function(err, result){
+            if(err){console.error("ERROR: contents update fail."); return;}
+            res.redirect('/board/' + boardId);
+        });
+
+    }else if(formMethod == "DELETE"){
+        DB.query(SQL.board.delete.contents, [boardId, authId], function(err, result){
+            if(err){console.error("ERROR: contents delete fail."); return;}
+            res.redirect('/board/page/1');
+        });
+    }
 });
 
 router.get('/:id', function(req, res, done){
@@ -61,11 +98,25 @@ router.get('/:id', function(req, res, done){
         return;
     }
 
-    DB.query(SQL.board.select.content, [id], function(err, result){
+    DB.query(SQL.board.select.contents, [id], function(err, result){
         if(err){console.error("ERROR: R-B-100"); done(err); return;}
 
-        console.log('board >>', result[0]);
-        res.render('board/board', {user:req.user, board: result[0]});
+        var page = req.session.page;
+        var isAuthor = (req.user.id == result[0].auth);
+
+        res.render('board/board', {user:req.user, board: result[0], prevPage: page, isOwner: isAuthor});
+    });
+});
+
+router.post('/update', function(req, res){
+    var contentsId = req.body.id;
+    var authId = req.user.id;
+
+    DB.query(SQL.board.select.contentsAuth, [contentsId, authId], function(err, result){
+        if(err){console.error("ERROR: Contents read fail.", err); return;}
+
+        console.log('board select >> ', result[0]);
+        res.render('board/board_write', {user: req.user, board: result[0]});
     });
 });
 
@@ -80,6 +131,7 @@ router.get('/page/:page', function(req, res){
 
     renderBoardList(req, res, function(err, result){
         if(err){console.error("ERROR", err); return;}
+        req.session.page = page;
         res.render('board/boards', {user:req.user, board: result});
     });
 });

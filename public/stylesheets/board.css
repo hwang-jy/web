@@ -21,3 +21,7 @@
 .active{
     border: gray solid 1px;
 }
+
+.center{
+    text-align: center;
+}

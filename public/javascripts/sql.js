@@ -2,11 +2,20 @@ module.exports = {
     board: {
         select: {
             /** Read content by id. arg[1] BS_BOARD.id */
-            content:`
-            SELECT BS_BOARD.id AS id, title, contents, AUTH.name AS name, DATE_FORMAT(created, '%H:%i %m-%d-%y') AS created, views, good-bad AS hit
+            contents:`
+            SELECT BS_BOARD.id AS id, title, contents, auth, AUTH.name AS name, DATE_FORMAT(created, '%H:%i %m-%d-%y') AS created, views, good-bad AS hit
             FROM BS_BOARD
             LEFT JOIN AUTH ON BS_BOARD.auth=AUTH.id
             WHERE BS_BOARD.id=?
+            LIMIT 1
+            `,
+
+            /** Read content by id, but re ID authentication. arg[2] id, auth */
+            contentsAuth:`
+            SELECT BS_BOARD.id AS id, title, contents, AUTH.name AS name, DATE_FORMAT(created, '%H:%i %m-%d-%y') AS created, views, good-bad AS hit
+            FROM BS_BOARD
+            LEFT JOIN AUTH ON BS_BOARD.auth=AUTH.id
+            WHERE BS_BOARD.id=? AND BS_BOARD.auth=?
             LIMIT 1
             `,
 
@@ -20,6 +29,35 @@ module.exports = {
 
             /** Read rows */
             rows: `SELECT FOUND_ROWS() AS total`
+        },
+
+        insert: {
+            /** Insert new contents arg[4] subject, title, contents, auth.id */
+            contents:`
+                INSERT INTO BS_BOARD(subject, title, contents, auth)
+                VALUES(?, ?, ?, ?)
+            `,
+
+            comment:`
+            
+            `
+        },
+
+        update: {
+            /** Update contents. arg[4] title, contents, board.id, auth.id */
+            contents: `
+                UPDATE BS_BOARD 
+                SET title=?, contents=?, updated=CURRENT_TIMESTAMP
+                WHERE id=? AND auth=?
+            `
+        },
+
+        delete: {
+            /** Delete contents arg[2] board.id, auth.id */
+            contents: `
+                DELETE FROM BS_BOARD
+                WHERE id=? AND auth=?
+            `
         }
     },
 
@@ -33,8 +71,8 @@ module.exports = {
         },
 
         insert:{
-            /** Signup new user. arg[2] email, token */
-            signup: `INSERT INTO AUTH(email, token) VALUES(?, ?)`
+            /** Signup new user. arg[3] email, name, token */
+            signup: `INSERT INTO AUTH(email, name, token) VALUES(?, ?, ?)`
         },
 
         update:{

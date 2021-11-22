@@ -1,4 +1,5 @@
-const BOARD_CONFIG = require('../../../config/board.json')
+const BOARD_CONFIG = require('../../../config/board.json');
+const REGEX = require('../../regex/regex');
 
 class Board{
     constructor(page, total, db_list){
@@ -24,15 +25,15 @@ class Board{
         this.posts = this.getPosts(db_list);
     }
 
-    pageCheck = function(request){
+    pageCheck(request){
         var page = request.params.page;
         if(REGEX.number.page.test(page)){
-            return Math.max(page, FIRST_PAGE);
+            return Math.max(page, 1);
         }
         return -1;
     }
 
-    getPages = function(){
+    getPages(){
         var numberOfButtons = 0;
         var offset = this.getOffset(this.view);
 
@@ -47,14 +48,14 @@ class Board{
         return this.pages;
     }
 
-    getOffset = function(unit) {
+    getOffset(unit) {
         if(this.page - 1 > 0){
             return (Math.trunc((this.page - 1) / 10)) * unit;
         }
         return 0;
     }
 
-    makeNumberArray = function(start, end, offset){
+    makeNumberArray(start, end, offset){
         var arr = [];
         for(var i=start; i<=end; i++){
             arr.push(i + offset);
@@ -62,7 +63,7 @@ class Board{
         return arr;
     }
 
-    getPosts = function(data){
+    getPosts(data){
         var start = this.view * (this.page - 1);
         var end = Math.min((this.view * this.page) - 1, this.total - 1);
         var offset = this.getOffset(this.unit);

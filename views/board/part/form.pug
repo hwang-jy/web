@@ -1,21 +1,16 @@
-form
-    input(type="text", name="title" placeholder="제목을 입력해주세요.")
-    input(type="textarea", name="contents" placeholder="내용을 입력해주세요.")
-
-
+form(action="/board", method="post") 
     input(type="hidden", name="subject", value="1")
-    input(type="hidden", name="method", value="POST or PUT")
 
-    //- if "POST" == "POST"
-    //-     button(type="submit" formaction="/board" formmethod="POST") 등록
-    //- else if "PUT" == "PUT"
-    //-     button(type="submit" formaction="/board" formmethod="POST") 수정
+    div
+        input(type="text", name="title" placeholder="제목을 입력해주세요." required
+            value=board? board.title : "") 
+    div
+        input(type="textarea", name="contents" placeholder="내용을 입력해주세요." required
+            value=board? board.contents : "")
 
-    button(type="submit" formaction="/board" formmethod="POST")
-        if "POST" == "POST"
-            등록
-        else if "PUT" == "PUT"
-            수정
-
-
-    
+    div
+        if title == undefined
+            button(type="submit" name="method" value="POST") 작성
+        else
+            button(type="submit" name="method" value="PUT") 수정
+        

@@ -6,10 +6,16 @@ module.exports = function(app){
 
     const config_session = {
         secret: 'login_session',
-        resave: true,
+        resave: false,
         saveUninitialized: true,
         cookie: { 
-            httpOnly: false,
+            httpOnly: true,
+            /*
+            if https
+                secure = true;
+            else
+                secure = false;
+            */
             secure: false
         },
         store:new FileStore()

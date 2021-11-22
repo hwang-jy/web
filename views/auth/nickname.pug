@@ -1,0 +1,12 @@
+extends ../layout/layout
+
+//- TODO: 닉네임
+block content
+    include ../layout/top-menu.pug
+
+    form(action="/auth/privacy", method="post") 
+        span
+            input(type="text" name="nickname" placeholder="닉네임" required)
+            button(type="button") 중복 확인
+
+        button(type="submit") 등록 

@@ -2,8 +2,18 @@ p= board.id
 p= board.title 
 p= board.contents
 p= board.created 
-p= board.auth 
+p= board.name 
 p= board.views
 p= board.hit
 
-a(href="#" onclick="history.back();") Back
+form(method="post")
+    input(type="hidden", name="id" value=board.id)
+    span 
+        if prevPage != undefined
+            a(href="/board/page/" + prevPage) 이전
+        else 
+            a(href="#" onclick="history.back();") 이전
+        
+        if isOwner
+            button(type="submit" name="method" value="PUT" formaction="/board/update") 수정
+            button(type="submit" name="method" value="DELETE" formaction="/board") 삭제

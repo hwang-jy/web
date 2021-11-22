@@ -1,35 +1,38 @@
 - var table_form = {id: "번호",subject: "주제",title: "제목",auth: "작성자",created: "작성일",views: "조회",hit: "추천"}
 div
+    div
+        a(href="/board") 글쓰기
     table
-        tr 
-            th= table_form.subject
-        tr.board_top_wrap
-            th= table_form.id
-            th= table_form.title
-            th= table_form.auth
-            th= table_form.created
-            th= table_form.views
-            th= table_form.hit
-        each post in board.posts
-            tr.board_item 
-                td= post.id 
-                td 
-                    a.hover_under(href="/board/" + post.id)= post.title 
-                td= post.name 
-                td= post.created 
-                td= post.views 
-                td= post.hit
-        tr 
-            td(colspan="6")
-                ul.page_button_wrap
-                    each page in board.pages
-                        li
-                            if page == board.page
-                                a.btn_page.hover_under.active(href="/board/page" + page)= page
-                            else
-                                a.btn_page.hover_under(href="/board/page/" + page)= page
-    
-    a(href="/board") 작성
+        thead
+            tr.table_head
+                th= table_form.subject
+            tr
+                th= table_form.id
+                th.center= table_form.title
+                th= table_form.auth
+                th.center= table_form.created
+                th.center= table_form.views
+                th.center= table_form.hit
+        tbody
+            each post in board.posts
+                tr.board_item 
+                    td= post.id 
+                    td 
+                        a.hover_under(href="/board/" + post.id)= post.title 
+                    td= post.name 
+                    td.center= post.created 
+                    td.center= post.views 
+                    td.center= post.hit
+        tfoot
+            tr
+                td(colspan="6")
+                    ul.page_button_wrap
+                        each page in board.pages
+                            li
+                                if page == board.page
+                                    a.btn_page.hover_under.active(href="/board/page" + page)= page
+                                else
+                                    a.btn_page.hover_under(href="/board/page/" + page)= page
 
 
 
