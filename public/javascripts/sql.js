@@ -3,7 +3,7 @@ module.exports = {
         select: {
             /** Read content by id. arg[1] BS_BOARD.id */
             contents:`
-            SELECT BS_BOARD.id AS id, title, contents, auth, AUTH.name AS name, DATE_FORMAT(created, '%H:%i %m-%d-%y') AS created, views, good-bad AS hit
+            SELECT BS_BOARD.id AS id, title, contents, auth, AUTH.name AS name, DATE_FORMAT(created, '%H:%i %m-%d-%y') AS created, views, good-bad AS hit, enabled
             FROM BS_BOARD
             LEFT JOIN AUTH ON BS_BOARD.auth=AUTH.id
             WHERE BS_BOARD.id=?
@@ -24,6 +24,7 @@ module.exports = {
             SELECT BS_BOARD.id AS id, title, AUTH.name AS name, DATE_FORMAT(created, '%H:%i %m-%d-%y') AS created, views, good-bad AS hit 
             FROM BS_BOARD 
             LEFT JOIN AUTH ON BS_BOARD.auth=AUTH.id 
+            WHERE enabled='Y'
             ORDER BY BS_BOARD.id DESC 
             LIMIT ? OFFSET ?`,
 
@@ -48,6 +49,12 @@ module.exports = {
             contents: `
                 UPDATE BS_BOARD 
                 SET title=?, contents=?, updated=CURRENT_TIMESTAMP
+                WHERE id=? AND auth=?
+            `,
+            /** Disable contents. arg[2] board.id, board.auth */
+            contentDisable: `
+                UPDATE BS_BOARD
+                SET enabled='N' 
                 WHERE id=? AND auth=?
             `
         },

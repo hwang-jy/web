@@ -77,8 +77,8 @@ router.post('/', function(req, res){
         });
 
     }else if(formMethod == "DELETE"){
-        DB.query(SQL.board.delete.contents, [boardId, authId], function(err, result){
-            if(err){console.error("ERROR: contents delete fail."); return;}
+        DB.query(SQL.board.update.contentDisable, [boardId, authId], function(err, result){
+            if(err){console.error("ERROR: contents disable fail."); return;}
             res.redirect('/board/page/1');
         });
     }
@@ -100,6 +100,14 @@ router.get('/:id', function(req, res, done){
 
     DB.query(SQL.board.select.contents, [id], function(err, result){
         if(err){console.error("ERROR: R-B-100"); done(err); return;}
+
+        console.log('뭐지? ', result[0].enabled);
+        var isEnable = (result[0].enabled == 'Y' ? true : false);
+
+        if(!isEnable){
+            done({message: "삭제된 글 입니다."});
+            return;
+        }
 
         var page = req.session.page;
         var isAuthor = (req.user.id == result[0].auth);
