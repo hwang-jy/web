@@ -19,17 +19,64 @@ module.exports = {
             LIMIT 1
             `,
 
-            /** Read board list. arg[2] limit, offset */
+            /** Read rows */
+            rows: `SELECT FOUND_ROWS() AS total`,
+
+                        /** Read board list. arg[2] limit, offset */
             list: `
             SELECT BS_BOARD.id AS id, title, AUTH.name AS name, DATE_FORMAT(created, '%H:%i %m-%d-%y') AS created, views, good-bad AS hit 
             FROM BS_BOARD 
             LEFT JOIN AUTH ON BS_BOARD.auth=AUTH.id 
             WHERE enabled='Y'
             ORDER BY BS_BOARD.id DESC 
-            LIMIT ? OFFSET ?`,
+            LIMIT ? OFFSET ?
+            `,
 
-            /** Read rows */
-            rows: `SELECT FOUND_ROWS() AS total`
+            
+            /**
+             * 
+             * @param {String} searchType 
+             */
+            listByType: function(searchType){
+                var where = "WHERE enabled='Y'";
+                switch(searchType){
+                    case "title": 
+                        where += " AND title LIKE ?"
+                        break;
+                    case "contents": 
+                        where += " AND contents LIKE ?"
+                        break;
+                    case "writer": 
+                        where += " AND AUTH.name LIKE ?"
+                        break;
+                };
+
+                return `
+                SELECT BS_BOARD.id AS id, title, AUTH.name AS name, DATE_FORMAT(created, '%H:%i %m-%d-%y') AS created, views, good-bad AS hit 
+                FROM BS_BOARD 
+                LEFT JOIN AUTH ON BS_BOARD.auth=AUTH.id 
+                ${where}
+                ORDER BY BS_BOARD.id DESC 
+                LIMIT ? OFFSET ?
+                `;
+            },
+
+            listByTitle: `
+            SELECT BS_BOARD.id AS id, title, AUTH.name AS name, DATE_FORMAT(created, '%H:%i %m-%d-%y') AS created, views, good-bad AS hit 
+            FROM BS_BOARD 
+            LEFT JOIN AUTH ON BS_BOARD.auth=AUTH.id 
+            WHERE enabled='Y' AND title=?
+            ORDER BY BS_BOARD.id DESC 
+            LIMIT ? OFFSET ?
+            `,
+
+            listByContents: `
+            
+            `,
+
+            listByWriter: `
+            
+            `
         },
 
         insert: {

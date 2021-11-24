@@ -38,8 +38,9 @@ class Board{
         var offset = this.getOffset(this.view);
 
         var start = this.total - offset;
-        if(start % this.unit == 0){
-            numberOfButtons = 10;
+        //if(start % this.unit == 0){
+        if(this.total == 0){
+            numberOfButtons = 1;
         }else{
             numberOfButtons = Math.ceil(start % this.unit / this.view);
         }

@@ -23,21 +23,6 @@ function isLogin(request){
     return request.user.isLogin;
 }
 
-function renderBoardList(request, response, done) {
-    var page = request.params.page;
-
-    DB.query(SQL.board.select.list, [BOARD_CONFIG.PAGES_PER_UNIT, getOffset(page, BOARD_CONFIG.PAGES_PER_UNIT)], function(err1, db_list){
-        if(err1) {console.error("ERROR: R-BL-100"); done(err1); return;}
-
-        DB.query(SQL.board.select.rows, function(err2, db_total){
-            if(err2) {console.error("ERROR: R-BL-101"); done(err1); return;}
-            var total = db_total[0].total;
-            var board_data = new Board(page, total, db_list);
-            done(null, board_data);
-        });
-    });
-}
-
 router.get('/', function(req, res){
     if(!isLogin(req)){
         res.redirect('/auth');
@@ -137,10 +122,46 @@ router.get('/page/:page', function(req, res){
         return;
     }
 
-    renderBoardList(req, res, function(err, result){
-        if(err){console.error("ERROR", err); return;}
-        req.session.page = page;
-        res.render('board/boards', {user:req.user, board: result});
+    DB.query(SQL.board.select.list, [BOARD_CONFIG.PAGES_PER_UNIT, getOffset(page, BOARD_CONFIG.PAGES_PER_UNIT)], function(err_list, db_list){
+        if(err_list) {console.error("ERROR: R-BL-100"); return;}
+
+        DB.query(SQL.board.select.rows, function(err_rows, db_total){
+            if(err_rows) {console.error("ERROR: R-BL-101"); return;}
+            var total = db_total[0].total;
+            var board_data = new Board(page, total, db_list);
+
+            req.session.page = page;
+            res.render('board/boards', {user:req.user, board: board_data, query: ""});
+        });
+    });
+});
+
+router.get('/page/:page/search', function(req, res, done){
+    var page = req.params.page;
+    var pageIsNumber = REGEX.number.page.test(page);
+
+    if(!pageIsNumber){
+        res.redirect('/boards/1');
+        return;
+    }
+
+    var searchType = req.query.type;
+    var searchKey = req.query.key;
+    var searchQuery = `?searchType=${searchType}&searchKey=${searchKey}`
+
+    console.log(searchQuery);
+
+    DB.query(SQL.board.select.listByType(searchType), [`%${searchKey}%`, BOARD_CONFIG.PAGES_PER_UNIT, getOffset(page, BOARD_CONFIG.PAGES_PER_UNIT)], function(err_list, db_list){
+        if(err_list) {console.error("ERROR: R-BL-100", err_list); return;}
+
+        DB.query(SQL.board.select.rows, function(err_rows, db_total){
+            if(err_rows) {console.error("ERROR: R-BL-101"); return;}
+            var total = db_total[0].total;
+            var board_data = new Board(page, total, db_list);
+            
+            req.session.page = page;
+            res.render('board/boards', {user:req.user, board: board_data, query: searchQuery});
+        });
     });
 });
 
