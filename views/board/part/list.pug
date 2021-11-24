@@ -30,9 +30,23 @@ div
                         each page in board.pages
                             li
                                 if page == board.page
-                                    a.btn_page.hover_under.active(href="/board/page" + page)= page
+                                    a.btn_page.hover_under.active(href="/board/page/" + page + "/search" + query)= page
                                 else
-                                    a.btn_page.hover_under(href="/board/page/" + page)= page
+                                    a.btn_page.hover_under(href="/board/page/" + page + "/search" + query)= page
+
+
+            tr 
+                td(colspan="6")
+                    form(action="/board/page/1/search", method="get")
+                        select(name="type")
+                            option(value="title" selected) 제목
+                            option(value="contents") 본문
+                            option(value="writer") 작성자
+                        
+                        input(type="text" name="key")
+                        button(type="submit") submit
+
+
 
 
 
