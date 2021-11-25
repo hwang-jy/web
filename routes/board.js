@@ -15,6 +15,18 @@ function getOffset(page, unit) {
     return 0;
 }
 
+class searchData{
+    constructor(type="", key=""){
+        this.query = "";
+        if(type != ""){
+            this.query = `?searchType=${type}&searchKey=${key}`;
+        }
+        this.type = type;
+        this.key = key;
+    }
+}
+
+
 function isLogin(request){
     if(request.user == undefined){
         return false
@@ -131,7 +143,7 @@ router.get('/page/:page', function(req, res){
             var board_data = new Board(page, total, db_list);
 
             req.session.page = page;
-            res.render('board/boards', {user:req.user, board: board_data, query: ""});
+            res.render('board/boards', {user:req.user, board: board_data, search: new searchData()});
         });
     });
 });
@@ -147,9 +159,7 @@ router.get('/page/:page/search', function(req, res, done){
 
     var searchType = req.query.type;
     var searchKey = req.query.key;
-    var searchQuery = `?searchType=${searchType}&searchKey=${searchKey}`
-
-    console.log(searchQuery);
+    var searchQuery = new searchData(searchType, searchKey);
 
     DB.query(SQL.board.select.listByType(searchType), [`%${searchKey}%`, BOARD_CONFIG.PAGES_PER_UNIT, getOffset(page, BOARD_CONFIG.PAGES_PER_UNIT)], function(err_list, db_list){
         if(err_list) {console.error("ERROR: R-BL-100", err_list); return;}
@@ -160,7 +170,7 @@ router.get('/page/:page/search', function(req, res, done){
             var board_data = new Board(page, total, db_list);
             
             req.session.page = page;
-            res.render('board/boards', {user:req.user, board: board_data, query: searchQuery});
+            res.render('board/boards', {user:req.user, board: board_data, search: searchQuery});
         });
     });
 });

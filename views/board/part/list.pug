@@ -30,20 +30,23 @@ div
                         each page in board.pages
                             li
                                 if page == board.page
-                                    a.btn_page.hover_under.active(href="/board/page/" + page + "/search" + query)= page
+                                    a.btn_page.hover_under.active(href="/board/page/" + page + "/search" + search.query)= page
                                 else
-                                    a.btn_page.hover_under(href="/board/page/" + page + "/search" + query)= page
+                                    a.btn_page.hover_under(href="/board/page/" + page + "/search" + search.query)= page
 
 
             tr 
                 td(colspan="6")
                     form(action="/board/page/1/search", method="get")
                         select(name="type")
-                            option(value="title" selected) 제목
-                            option(value="contents") 본문
-                            option(value="writer") 작성자
+                            - var options = [{type:"title", text:"제목"}, {type:"contents", text:"본문"}, {type:"writer", text:"작성자"}]
+                            each op in options
+                                if op.type == search.type
+                                    option(value=`${op.type}` selected)= op.text
+                                else
+                                    option(value=`${op.type}`)= op.text
                         
-                        input(type="text" name="key")
+                        input(type="text" name="key" value=`${search.key}`)
                         button(type="submit") submit
 
 
