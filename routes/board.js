@@ -15,17 +15,54 @@ function getOffset(page, unit) {
     return 0;
 }
 
-class searchData{
-    constructor(type="", key=""){
-        this.query = "";
-        if(type != ""){
-            this.query = `?searchType=${type}&searchKey=${key}`;
-        }
-        this.type = type;
-        this.key = key;
+
+function drawBoardList(req, res, done){
+    var page = req.params.page;
+    var pageIsNumber = REGEX.number.page.test(page);
+    var searchInfo = new searchData(req);
+    var params = [];
+
+    if(!pageIsNumber){
+        res.redirect('/boards/1');
+        return;
     }
+
+    if(req.query.type == undefined){    
+        params = [BOARD_CONFIG.PAGES_PER_UNIT, getOffset(page, BOARD_CONFIG.PAGES_PER_UNIT)];
+    }else{
+        params = [`%${searchInfo.key}%`, BOARD_CONFIG.PAGES_PER_UNIT, getOffset(page, BOARD_CONFIG.PAGES_PER_UNIT)];        
+    }
+
+    DB.query(searchInfo.sql, params, function(err_list, db_list){
+        if(err_list) {console.error("ERROR: R-BL-100", err_list); done(err_list); return;}
+
+        DB.query(SQL.board.select.rows, function(err_rows, db_total){
+            if(err_rows) {console.error("ERROR: R-BL-101"); done(err_rows); return;}
+            var total = db_total[0].total;
+            var board_data = new Board(page, total, db_list);
+            
+            req.session.page = page;
+            done(null, {user:req.user, board: board_data, search: searchInfo});
+        });
+    });
 }
 
+class searchData{
+    constructor(request){
+        this.query = ""
+        this.type = "";
+        this.key = "";
+
+        if(request.query.type != undefined){
+            this.type = request.query.type;
+            this.key = request.query.key;
+            this.sql = SQL.board.select.listByType(this.type);
+            this.query = `/search?searchType=${this.type}&searchKey=${this.key}`;
+        }else{
+            this.sql = SQL.board.select.list;
+        }
+    }
+}
 
 function isLogin(request){
     if(request.user == undefined){
@@ -126,52 +163,18 @@ router.post('/update', function(req, res){
 });
 
 router.get('/page/:page', function(req, res){
-    var page = req.params.page;
-    var pageIsNumber = REGEX.number.page.test(page);
+    drawBoardList(req, res, function(err, result){
+        if(err){return;}
 
-    if(!pageIsNumber){
-        res.redirect('/boards/1');
-        return;
-    }
-
-    DB.query(SQL.board.select.list, [BOARD_CONFIG.PAGES_PER_UNIT, getOffset(page, BOARD_CONFIG.PAGES_PER_UNIT)], function(err_list, db_list){
-        if(err_list) {console.error("ERROR: R-BL-100"); return;}
-
-        DB.query(SQL.board.select.rows, function(err_rows, db_total){
-            if(err_rows) {console.error("ERROR: R-BL-101"); return;}
-            var total = db_total[0].total;
-            var board_data = new Board(page, total, db_list);
-
-            req.session.page = page;
-            res.render('board/boards', {user:req.user, board: board_data, search: new searchData()});
-        });
+        res.render('board/boards', result);
     });
 });
 
-router.get('/page/:page/search', function(req, res, done){
-    var page = req.params.page;
-    var pageIsNumber = REGEX.number.page.test(page);
+router.get('/page/:page/search', function(req, res){
+    drawBoardList(req, res, function(err, result){
+        if(err){return;}
 
-    if(!pageIsNumber){
-        res.redirect('/boards/1');
-        return;
-    }
-
-    var searchType = req.query.type;
-    var searchKey = req.query.key;
-    var searchQuery = new searchData(searchType, searchKey);
-
-    DB.query(SQL.board.select.listByType(searchType), [`%${searchKey}%`, BOARD_CONFIG.PAGES_PER_UNIT, getOffset(page, BOARD_CONFIG.PAGES_PER_UNIT)], function(err_list, db_list){
-        if(err_list) {console.error("ERROR: R-BL-100", err_list); return;}
-
-        DB.query(SQL.board.select.rows, function(err_rows, db_total){
-            if(err_rows) {console.error("ERROR: R-BL-101"); return;}
-            var total = db_total[0].total;
-            var board_data = new Board(page, total, db_list);
-            
-            req.session.page = page;
-            res.render('board/boards', {user:req.user, board: board_data, search: searchQuery});
-        });
+        res.render('board/boards', result);
     });
 });
 
