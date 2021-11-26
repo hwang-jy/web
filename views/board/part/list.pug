@@ -30,9 +30,9 @@ div
                         each page in board.pages
                             li
                                 if page == board.page
-                                    a.btn_page.hover_under.active(href="/board/page/" + page + "/search" + search.query)= page
+                                    a.btn_page.hover_under.active(href="/board/page/" + page + search.query)= page
                                 else
-                                    a.btn_page.hover_under(href="/board/page/" + page + "/search" + search.query)= page
+                                    a.btn_page.hover_under(href="/board/page/" + page + search.query)= page
 
 
             tr 
@@ -46,7 +46,7 @@ div
                                 else
                                     option(value=`${op.type}`)= op.text
                         
-                        input(type="text" name="key" value=`${search.key}`)
+                        input(type="text" name="key" value=`${search.key}`  required)
                         button(type="submit") submit
 
 
