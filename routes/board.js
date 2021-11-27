@@ -135,7 +135,6 @@ router.get('/:id', function(req, res, done){
     DB.query(SQL.board.select.contents, [id], function(err, result){
         if(err){console.error("ERROR: R-B-100"); done(err); return;}
 
-        console.log('뭐지? ', result[0].enabled);
         var isEnable = (result[0].enabled == 'Y' ? true : false);
 
         if(!isEnable){
@@ -157,7 +156,6 @@ router.post('/update', function(req, res){
     DB.query(SQL.board.select.contentsAuth, [contentsId, authId], function(err, result){
         if(err){console.error("ERROR: Contents read fail.", err); return;}
 
-        console.log('board select >> ', result[0]);
         res.render('board/board_write', {user: req.user, board: result[0]});
     });
 });
