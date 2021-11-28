@@ -38,7 +38,6 @@ class Board{
         var offset = this.getOffset(this.view);
 
         var start = this.total - offset;
-        //if(start % this.unit == 0){
         if(this.total == 0){
             numberOfButtons = 1;
         }else{
